@@ -111,7 +111,7 @@ def printResults(dictionary):
     for key in dictionary:
         print (str(key) + ": "),
         for elem in dictionary[key]:
-            print(elem),
+            print(str(elem) + ", "),
         print
         print
 
