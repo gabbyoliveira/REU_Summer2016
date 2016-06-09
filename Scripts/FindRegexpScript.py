@@ -37,6 +37,8 @@ def openFile(fileName, extension):
             return findRegExpRuby(inputFile)
         elif(extension == "py" or extension == "pyc"):
             return findRegExpPython(inputFile)
+        elif(extension == "go"):
+            return findRegExpGo(inputFile)
         else:
             return findRegExpGeneral(inputFile)
     return None
@@ -46,7 +48,7 @@ def findRegExpJS(inputFile):
     counter = 1
     regexpLines = set()
     for line in inputFile:
-        if(("RegExp" in line) or (".exec(" in line) or (".test(" in line) or ("replace" in line)):
+        if(("RegExp" in line) or (".exec(" in line) or (".test(" in line) or ("replace" in line) or (".prototype" in line.lower())):
             regexpLines.add(counter)
         counter += 1
             
@@ -86,7 +88,26 @@ def findRegExpPython(inputFile):
     counter = 1
     regexpLines = set()
     for line in inputFile:
-        if(("re.match(" in line) or ("re.compile(" in line) or ("re.") or (".match(" in line)):
+        if(("re.match(" in line) or ("re.compile(" in line) or ("re." in line) or (".match(" in line)):
+            regexpLines.add(counter)
+        counter += 1
+            
+    regexpLines = sorted(regexpLines)
+        
+    return regexpLines
+
+def findRegExpGo(inputFile):
+    counter = 1
+    regexpLines = set()
+    for line in inputFile:
+        if(("regexp" in line.lower()) or
+           ("regexp." in line.lower()) or
+           (".match" in line.lower()) or
+           (".matchreader" in line.lower()) or
+           (".matchstring" in line.lower()) or
+           (".compile" in line.lower()) or
+           (".mustcompile" in line.lower()) or
+           (".find" in line.lower())):
             regexpLines.add(counter)
         counter += 1
             
