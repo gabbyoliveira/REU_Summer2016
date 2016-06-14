@@ -1,6 +1,7 @@
 #Script test to find "regexp" on a javascript file
 import os
 import os.path
+import xlsxwriter
 
 def readExtension(directory):
     listFiles = os.listdir(directory)
@@ -48,7 +49,8 @@ def findRegExpJS(inputFile):
     counter = 1
     regexpLines = set()
     for line in inputFile:
-        if(("RegExp" in line) or (".exec(" in line) or (".test(" in line) or ("replace" in line) or (".prototype" in line.lower())):
+        if((".exec(" in line) or (".test(" in line) or ("RegExp" in line)):
+            #or (".prototype" in line.lower()) or ("replace" in line) 
             regexpLines.add(counter)
         counter += 1
             
@@ -76,7 +78,7 @@ def findRegExpRuby(inputFile):
     regexpLines = set()
         
     for line in inputFile:
-        if(("RegExp" in line) or (".match(" in line) or ("regex" in line.lower())):
+        if(("where" in line.lower()) or ("RegExp" in line) or (".match(" in line) or ("regex" in line.lower()) or ("pattern" in line.lower())):
             regexpLines.add(counter)
         counter += 1
 
@@ -126,6 +128,8 @@ def findRegExpGeneral(inputFile):
     regexpLines = sorted(regexpLines)
         
     return regexpLines
+
+
 def printResults(dictionary):
     print
     
@@ -136,7 +140,36 @@ def printResults(dictionary):
         print
         print
 
+
+def resultsToExcel(dictionary):
+    filename = raw_input("Enter name of the output file (with NO extension): ")
+   
+    workbook = xlsxwriter.Workbook(filename + '.xlsx')
+    worksheet = workbook.add_worksheet("CODE")
+
+    worksheet.write(0, 0, "Repository")
+    worksheet.write(0, 1, "File Name")
+    worksheet.write(0, 2, "Link")
+    worksheet.write(0, 3, "Language")
+    worksheet.write(0, 4, "Line")
+    worksheet.write(0, 5, "Regex")
+    worksheet.write(0, 6, "Why the regex is used on code")
+    worksheet.write(0, 7, "Dynamic?")
+    worksheet.write(0, 8, "Date Download")
+    
+    row = 1
+    for key in dictionary:
+        for lineNumber in dictionary[key]:
+            worksheet.write(row, 1, key)
+            worksheet.write(row, 3, key[key.rfind(".")+1:].upper())
+            worksheet.write(row, 4, lineNumber)
+            row += 1
+
+    workbook.close()
+        
 if __name__ == '__main__':
     val = raw_input("Enter path of directory that contains the files: ")
-    printResults(readExtension(val))
+    results = readExtension(val)
     
+    #printResults(results)
+    resultsToExcel(results)
